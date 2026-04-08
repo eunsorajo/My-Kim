@@ -3,13 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#1a1a2e">
-<meta name="description" content="2026 글로벌 진출 프로그램 업무 대시보드">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="2026 글로벌">
-<link rel="icon" type="image/svg+xml" href="/icon.svg">
-<link rel="manifest" href="/manifest.json">
 <title>2026 글로벌 진출 업무 대시보드</title>
 <style>
   :root {
@@ -180,80 +173,47 @@
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-  /* ── 모바일 최적화 ── */
-  @media (max-width: 768px) {
-    header { padding: 12px 16px; flex-direction: column; gap: 12px; }
-    .header-left { width: 100%; }
-    .header-right { width: 100%; justify-content: space-between; }
-    .deadline-badge { font-size: 11px; padding: 4px 10px; }
-    .current-time { font-size: 12px; }
+  /* ── Mobile Responsive ── */
+  .mobile-nav { display: none; }
+  .mobile-content { display: none; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fadeIn 0.3s; }
 
-    .main { padding: 16px; grid-template-columns: 1fr; gap: 16px; }
-    .col-2 { grid-column: 1; }
-
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .kpi { padding: 14px 16px; }
-    .kpi-label { font-size: 10px; }
-    .kpi-value { font-size: 22px; }
-    .kpi-sub { font-size: 10px; }
-
-    .card { padding: 16px; border-radius: 12px; }
-    .card-title { font-size: 12px; }
-
-    .todo-input-row { flex-direction: column; gap: 6px; }
-    .priority-select { width: 100%; }
-    .todo-add-btn { width: 100%; padding: 12px; font-size: 14px; }
-    .todo-item { padding: 12px; gap: 8px; min-height: 44px; }
-    .todo-text { font-size: 13px; }
-
-    .prog-list { max-height: 300px; }
-    .prog-item { padding: 10px 12px; }
-    .prog-name { font-size: 12px; }
-
-    .week-grid { grid-template-columns: repeat(7, 1fr); gap: 6px; }
-    .day-col { padding: 8px 6px; min-height: 100px; }
-    .day-name { font-size: 9px; }
-    .day-num { font-size: 14px; }
-    .event { font-size: 9px; padding: 2px 5px; }
-
-    .contact-grid { grid-template-columns: 1fr; gap: 12px; }
-    .contact-card { padding: 12px; }
-    .contact-name { font-size: 12px; }
-    .contact-role { font-size: 11px; }
-    .contact-tel { font-size: 10px; margin-top: 3px; }
-
-    .rev-item { padding: 12px 14px; }
-    .rev-label { font-size: 10px; }
-    .rev-value { font-size: 18px; }
-
-    .budget-table { font-size: 11px; }
-    .budget-table th { padding: 6px 8px; font-size: 10px; }
-    .budget-table td { padding: 7px 8px; }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
-  @media (max-width: 480px) {
-    header { padding: 10px 12px; }
-    .logo { width: 32px; height: 32px; font-size: 16px; }
-    .header-title { font-size: 15px; }
-    .header-sub { font-size: 11px; }
+  @media (max-width: 768px) {
+    body { padding-bottom: 70px; }
+    .main { display: none !important; }
+    header { padding: 12px 16px; }
 
-    .main { padding: 12px; gap: 12px; }
+    .mobile-nav {
+      display: flex; position: fixed; bottom: 0; left: 0; right: 0;
+      height: 60px; background: var(--surface); border-top: 1px solid var(--border);
+      justify-content: space-around; z-index: 200; width: 100%;
+    }
+    .mobile-content {
+      display: block; padding: 12px;
+    }
 
-    .kpi-grid { grid-template-columns: 1fr; }
-    .kpi-label { font-size: 9px; }
-    .kpi-value { font-size: 20px; }
+    .tab-btn {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; border: none; background: none;
+      color: var(--text-muted); cursor: pointer; font-size: 11px;
+      gap: 4px; transition: all 0.3s; padding: 6px;
+    }
+    .tab-btn.active {
+      color: var(--accent); background: rgba(124, 110, 255, 0.1);
+    }
+    .tab-btn span:first-child { font-size: 18px; }
 
-    .todo-item { padding: 11px; min-height: 42px; }
-    .todo-cb { width: 16px; height: 16px; }
-    .p-tag { font-size: 9px; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
 
-    .day-col { min-height: 90px; }
-    .day-num { font-size: 13px; }
-
-    .contact-card { padding: 10px; }
-    .contact-name { font-size: 11px; }
-
-    body { font-size: 13px; }
+    .card { padding: 14px; margin-bottom: 12px; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
   }
 </style>
 </head>
@@ -595,14 +555,129 @@ function handleKey(e) {
 
 renderTodos();
 
-// Service Worker 등록 (PWA)
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/service-worker.js').then(reg => {
-    console.log('✅ Service Worker 등록 완료');
-  }).catch(err => {
-    console.log('Service Worker 등록 실패:', err);
+// ── 요일별 일정 데이터 ──
+const schedule = [
+  { day: '월 30일', task: '사전타당성 검토표 제출' },
+  { day: '화 31일', task: '1차 모집 공고 게시' },
+  { day: '수 1일', task: '접수현황 중간점검 (오늘)' },
+  { day: '목 2일', task: '파트너사 미팅' },
+  { day: '금 3일', task: '주간 업무 점검 회의' },
+];
+
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tabName).classList.add('active');
+  event.target.closest('.tab-btn').classList.add('active');
+
+  if (tabName === 'todo') renderMobileTodos();
+  else if (tabName === 'schedule') renderMobileSchedule();
+  else if (tabName === 'projects') renderMobileProjects();
+  else if (tabName === 'summary') renderMobileSummary();
+}
+
+function renderMobileTodos() {
+  const list = document.getElementById('mobileTodoList');
+  const sorted = [...todos].sort((a,b) => {
+    const order = {urgent:0, high:1, mid:2, low:3};
+    if(a.done !== b.done) return a.done ? 1 : -1;
+    return order[a.priority] - order[b.priority];
   });
+  list.innerHTML = sorted.slice(0, 5).map((t) => `
+    <div class="todo-item ${t.done ? 'done' : ''}" onclick="toggleTodo(${t.id})">
+      <div class="todo-cb"><span class="todo-cb-check">✓</span></div>
+      <div class="todo-text">${t.text}</div>
+      <span class="p-tag ${pMap[t.priority].cls}">${pMap[t.priority].label}</span>
+    </div>
+  `).join('');
+}
+
+function renderMobileSchedule() {
+  const list = document.getElementById('mobileScheduleList');
+  list.innerHTML = schedule.map(s => `
+    <div class="prog-item" style="padding: 10px 14px;">
+      <div class="prog-top"><span class="prog-name">${s.day}</span></div>
+      <div style="font-size: 12px; color: var(--text-muted);">${s.task}</div>
+    </div>
+  `).join('');
+}
+
+function renderMobileProjects() {
+  const list = document.getElementById('mobileProjectList');
+  list.innerHTML = projects.slice(0, 5).map(p => `
+    <div class="prog-item">
+      <div class="prog-top">
+        <span class="prog-name">${p.name}</span>
+        <span class="prog-pct" style="color: ${p.color};">${p.pct}%</span>
+      </div>
+      <div class="bar-wrap"><div class="bar-fill" style="width: ${p.pct}%; background: ${p.color};"></div></div>
+    </div>
+  `).join('');
+}
+
+function renderMobileSummary() {
+  const list = document.getElementById('mobileSummaryContent');
+  list.innerHTML = `
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+      <div class="rev-item">
+        <div class="rev-label">총 프로그램</div>
+        <div class="rev-value">10개</div>
+      </div>
+      <div class="rev-item">
+        <div class="rev-label">모집 목표</div>
+        <div class="rev-value">58개</div>
+      </div>
+      <div class="rev-item">
+        <div class="rev-label">총 지원금</div>
+        <div class="rev-value">2.32억</div>
+      </div>
+      <div class="rev-item">
+        <div class="rev-label">협약 완료</div>
+        <div class="rev-value">8개</div>
+      </div>
+    </div>
+  `;
+}
+
+// 초기 렌더링
+if (window.innerWidth <= 768) {
+  renderMobileTodos();
 }
 </script>
+
+<!-- 모바일 콘텐츠 -->
+<div class="mobile-content" id="mobileContent">
+  <div class="tab-panel active" id="tab-todo">
+    <div class="card">
+      <div class="card-title"><span>✅</span> 오늘 할 일</div>
+      <div id="mobileTodoList"></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="tab-schedule">
+    <div class="card">
+      <div class="card-title"><span>📅</span> 이번 주 일정</div>
+      <div id="mobileScheduleList"></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="tab-projects">
+    <div class="card">
+      <div class="card-title"><span>📈</span> 프로젝트</div>
+      <div id="mobileProjectList"></div>
+    </div>
+  </div>
+  <div class="tab-panel" id="tab-summary">
+    <div class="card">
+      <div class="card-title"><span>💰</span> 요약</div>
+      <div id="mobileSummaryContent"></div>
+    </div>
+  </div>
+</div>
+
+<nav class="mobile-nav">
+  <button class="tab-btn active" onclick="switchTab('todo')"><span>✅</span><span>할 일</span></button>
+  <button class="tab-btn" onclick="switchTab('schedule')"><span>📅</span><span>일정</span></button>
+  <button class="tab-btn" onclick="switchTab('projects')"><span>📈</span><span>프로젝트</span></button>
+  <button class="tab-btn" onclick="switchTab('summary')"><span>💰</span><span>요약</span></button>
+</nav>
 </body>
 </html>
