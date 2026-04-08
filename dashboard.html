@@ -2,7 +2,14 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1a1a2e">
+<meta name="description" content="2026 글로벌 진출 업무 대시보드">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="2026 글로벌">
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
+<link rel="manifest" href="/manifest.json">
 <title>2026 글로벌 진출 업무 대시보드</title>
 <style>
   :root {
@@ -19,665 +26,400 @@
     --red: #FF5C6C;
     --cyan: #00C9E0;
   }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif; font-size: 14px; min-height: 100vh; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 60px;
+  }
 
   /* ── Header ── */
   header {
     background: linear-gradient(135deg, #1A1A35 0%, #0F0F1A 100%);
     border-bottom: 1px solid var(--border);
-    padding: 16px 28px;
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 100;
+    padding: 12px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
-  .header-left { display: flex; align-items: center; gap: 14px; }
+
+  .header-content { display: flex; justify-content: space-between; align-items: center; }
   .logo { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-  .header-title { font-size: 17px; font-weight: 700; color: var(--text); }
-  .header-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
-  .header-right { display: flex; align-items: center; gap: 16px; }
-  .deadline-badge {
-    background: rgba(255,92,108,0.15); border: 1px solid rgba(255,92,108,0.4);
-    color: var(--red); font-size: 12px; font-weight: 700;
-    padding: 6px 14px; border-radius: 20px;
-    animation: pulse 2s infinite;
+  .header-title { font-size: 15px; font-weight: 700; color: var(--text); margin-left: 10px; }
+  .header-time { font-size: 11px; color: var(--text-muted); }
+
+  /* ── Main Content ── */
+  .content { flex: 1; overflow-y: auto; padding: 12px; }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ── Cards ── */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+  .card-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+
+  /* ── Tab Navigation (Bottom) ── */
+  .tab-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-around;
+    z-index: 200;
+    height: 60px;
   }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.7} }
-  .current-time { font-size: 13px; color: var(--text-muted); }
 
-  /* ── Layout ── */
-  .main { padding: 24px 28px; display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto; gap: 20px; }
-  .col-full { grid-column: 1 / -1; }
-  .col-2 { grid-column: span 2; }
+  .tab-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px;
+    transition: all 0.3s;
+  }
 
-  /* ── Card ── */
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
-  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-  .card-title { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; display: flex; align-items: center; gap: 8px; }
-  .card-title span { font-size: 15px; }
+  .tab-btn.active {
+    color: var(--accent);
+    background: rgba(124, 110, 255, 0.1);
+  }
+
+  .tab-btn span:first-child { font-size: 20px; }
 
   /* ── KPI Cards ── */
-  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; position: relative; overflow: hidden; }
-  .kpi::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 14px 14px 0 0; }
-  .kpi-purple::before { background: linear-gradient(90deg, var(--accent), #B8B0FF); }
-  .kpi-pink::before   { background: linear-gradient(90deg, var(--accent2), #FFB0CC); }
-  .kpi-green::before  { background: linear-gradient(90deg, var(--green), #80FFD0); }
-  .kpi-orange::before { background: linear-gradient(90deg, var(--orange), #FFD898); }
-  .kpi-label { font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px; }
-  .kpi-value { font-size: 28px; font-weight: 800; }
-  .kpi-purple .kpi-value { color: #B8B0FF; }
-  .kpi-pink .kpi-value   { color: #FFB0CC; }
-  .kpi-green .kpi-value  { color: var(--green); }
-  .kpi-orange .kpi-value { color: var(--orange); }
-  .kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
-  .kpi-trend { font-size: 11px; font-weight: 600; margin-top: 6px; }
-  .trend-up { color: var(--green); }
-  .trend-warn { color: var(--orange); }
+  .kpi-mini {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
-  /* ── Todo ── */
-  .todo-input-row { display: flex; gap: 8px; margin-bottom: 16px; }
-  .todo-input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 14px; color: var(--text); font-size: 13px; outline: none; font-family: inherit; }
-  .todo-input:focus { border-color: var(--accent); }
-  .todo-input::placeholder { color: var(--text-muted); }
-  .priority-select { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; color: var(--text); font-size: 12px; outline: none; cursor: pointer; }
-  .todo-add-btn { background: var(--accent); color: white; border: none; border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
-  .todo-add-btn:hover { background: #9A8FFF; }
+  .kpi-mini-label { font-size: 12px; color: var(--text-muted); }
+  .kpi-mini-value { font-size: 18px; font-weight: 800; }
 
-  .todo-list { display: flex; flex-direction: column; gap: 6px; max-height: 340px; overflow-y: auto; }
-  .todo-list::-webkit-scrollbar { width: 4px; }
-  .todo-list::-webkit-scrollbar-track { background: transparent; }
-  .todo-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .kpi-mini.purple .kpi-mini-value { color: #B8B0FF; }
+  .kpi-mini.pink .kpi-mini-value { color: #FFB0CC; }
+  .kpi-mini.green .kpi-mini-value { color: var(--green); }
+  .kpi-mini.orange .kpi-mini-value { color: var(--orange); }
 
-  .todo-item { display: flex; align-items: center; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; cursor: pointer; transition: border-color 0.2s; }
-  .todo-item:hover { border-color: var(--accent); }
+  /* ── Todo Items ── */
+  .todo-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    min-height: 42px;
+  }
+
   .todo-item.done { opacity: 0.5; }
-  .todo-item.done .todo-text { text-decoration: line-through; color: var(--text-muted); }
+  .todo-item.done .todo-text { text-decoration: line-through; }
 
-  .todo-cb { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 5px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; cursor: pointer; }
-  .todo-item.done .todo-cb { background: var(--green); border-color: var(--green); }
-  .todo-cb-check { display: none; color: white; font-size: 11px; font-weight: 700; }
-  .todo-item.done .todo-cb-check { display: block; }
-
-  .p-tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; flex-shrink: 0; }
-  .p-urgent { background: rgba(255,92,108,0.2); color: var(--red); }
-  .p-high   { background: rgba(255,181,71,0.2); color: var(--orange); }
-  .p-mid    { background: rgba(124,110,255,0.2); color: #B8B0FF; }
-  .p-low    { background: rgba(112,112,160,0.15); color: var(--text-muted); }
-  .todo-text { flex: 1; font-size: 13px; color: var(--text); }
-  .todo-del { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; padding: 0 2px; opacity: 0; transition: opacity 0.2s; }
-  .todo-item:hover .todo-del { opacity: 1; }
-  .todo-del:hover { color: var(--red); }
-
-  /* ── Projects / Progress ── */
-  .prog-list { display: flex; flex-direction: column; gap: 10px; max-height: 420px; overflow-y: auto; }
-  .prog-list::-webkit-scrollbar { width: 4px; }
-  .prog-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  .prog-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
-  .prog-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-  .prog-name { font-size: 13px; font-weight: 600; color: var(--text); }
-  .prog-country { font-size: 11px; color: var(--text-muted); }
-  .prog-pct { font-size: 13px; font-weight: 700; }
-  .prog-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
-  .prog-type { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
-  .type-poc   { background: rgba(0,201,224,0.15); color: var(--cyan); }
-  .type-scale { background: rgba(255,181,71,0.15); color: var(--orange); }
-  .type-accel { background: rgba(124,110,255,0.15); color: var(--accent); }
-  .prog-partner { font-size: 11px; color: var(--text-muted); }
-  .prog-slots { font-size: 11px; color: var(--text-muted); }
-  .bar-wrap { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 99px; transition: width 0.8s; }
-
-  /* ── Weekly Schedule ── */
-  .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-  .day-col { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 8px; min-height: 130px; }
-  .day-col.today { border-color: var(--accent); background: rgba(124,110,255,0.08); }
-  .day-col.weekend { opacity: 0.5; }
-  .day-header { text-align: center; margin-bottom: 8px; }
-  .day-name { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-  .day-num { font-size: 18px; font-weight: 800; color: var(--text); line-height: 1.2; }
-  .day-col.today .day-num { color: var(--accent); }
-  .day-events { display: flex; flex-direction: column; gap: 4px; }
-  .event { font-size: 10px; padding: 3px 7px; border-radius: 5px; line-height: 1.4; }
-  .ev-red    { background: rgba(255,92,108,0.15); color: #FF9AA5; }
-  .ev-purple { background: rgba(124,110,255,0.15); color: #B8B0FF; }
-  .ev-green  { background: rgba(0,214,143,0.15); color: #80FFD0; }
-  .ev-orange { background: rgba(255,181,71,0.15); color: #FFD898; }
-  .ev-cyan   { background: rgba(0,201,224,0.15); color: #80E8F0; }
-
-  /* ── Revenue ── */
-  .revenue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-  .rev-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
-  .rev-label { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
-  .rev-value { font-size: 22px; font-weight: 800; }
-  .rev-sub { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
-
-  .budget-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .budget-table th { background: var(--surface2); color: var(--text-muted); font-weight: 600; font-size: 11px; text-transform: uppercase; padding: 8px 10px; text-align: left; }
-  .budget-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); color: var(--text); }
-  .budget-table tr:last-child td { border-bottom: none; }
-  .budget-table tr:hover td { background: var(--surface2); }
-  .budget-bar-mini { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 4px; }
-  .budget-bar-mini-fill { height: 100%; border-radius: 2px; }
-
-  /* ── Contacts ── */
-  .contact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .contact-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
-  .contact-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
-  .contact-role { font-size: 11px; color: var(--accent); margin-bottom: 5px; }
-  .contact-countries { font-size: 11px; color: var(--text-muted); }
-  .contact-tel { font-size: 11px; color: var(--cyan); margin-top: 4px; }
-
-  /* scrollbar global */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-  /* ── Mobile Responsive ── */
-  .mobile-nav { display: none; }
-  .mobile-content { display: none; }
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; animation: fadeIn 0.3s; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  .todo-cb {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
   }
 
-  @media (max-width: 768px) {
-    body { padding-bottom: 70px; }
-    .main { display: none !important; }
-    header { padding: 12px 16px; }
-
-    .mobile-nav {
-      display: flex; position: fixed; bottom: 0; left: 0; right: 0;
-      height: 60px; background: var(--surface); border-top: 1px solid var(--border);
-      justify-content: space-around; z-index: 200; width: 100%;
-    }
-    .mobile-content {
-      display: block; padding: 12px;
-    }
-
-    .tab-btn {
-      flex: 1; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; border: none; background: none;
-      color: var(--text-muted); cursor: pointer; font-size: 11px;
-      gap: 4px; transition: all 0.3s; padding: 6px;
-    }
-    .tab-btn.active {
-      color: var(--accent); background: rgba(124, 110, 255, 0.1);
-    }
-    .tab-btn span:first-child { font-size: 18px; }
-
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-
-    .card { padding: 14px; margin-bottom: 12px; }
-    .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
+  .todo-item.done .todo-cb {
+    background: var(--green);
+    border-color: var(--green);
   }
+
+  .todo-check { display: none; color: white; font-size: 12px; font-weight: 700; }
+  .todo-item.done .todo-check { display: block; }
+
+  .todo-priority {
+    width: 3px;
+    height: 30px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .todo-priority.urgent { background: var(--red); }
+  .todo-priority.high { background: var(--orange); }
+  .todo-priority.mid { background: var(--accent); }
+  .todo-priority.low { background: var(--green); }
+
+  .todo-text { flex: 1; font-size: 13px; }
+
+  /* ── Schedule ── */
+  .day-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+  }
+
+  .day-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .day-name { font-size: 12px; font-weight: 700; color: var(--text); }
+  .day-task { font-size: 12px; color: var(--text-muted); }
+
+  /* ── Projects ── */
+  .project-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+  }
+
+  .project-name { font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+  .project-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+  .project-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .project-fill { height: 100%; border-radius: 3px; }
+
+  /* ── Stats ── */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-box {
+    background: linear-gradient(135deg, var(--accent) 0%, #5D4FCC 100%);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    color: white;
+  }
+
+  .stat-box.pink { background: linear-gradient(135deg, var(--accent2) 0%, #D4567E 100%); }
+  .stat-box.green { background: linear-gradient(135deg, var(--green) 0%, #00B377 100%); }
+  .stat-box.orange { background: linear-gradient(135deg, var(--orange) 0%, #E67C2F 100%); }
+
+  .stat-value { font-size: 20px; font-weight: 800; line-height: 1.2; }
+  .stat-label { font-size: 10px; color: rgba(255,255,255,0.8); margin-top: 2px; }
+
+  /* ── Scrollbar ── */
+  .content::-webkit-scrollbar { width: 4px; }
+  .content::-webkit-scrollbar-track { background: transparent; }
+  .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 </style>
 </head>
 <body>
 
 <!-- Header -->
 <header>
-  <div class="header-left">
-    <div class="logo">🌏</div>
-    <div>
-      <div class="header-title">2026 글로벌 진출 업무 대시보드</div>
-      <div class="header-sub">서울창업허브 공덕 · 스케일업1팀 · (재)서울경제진흥원</div>
+  <div class="header-content">
+    <div style="display:flex;align-items:center;">
+      <div class="logo">🌏</div>
+      <div style="margin-left:10px;">
+        <div class="header-title">2026 글로벌</div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:1px;">업무 대시보드</div>
+      </div>
     </div>
-  </div>
-  <div class="header-right">
-    <div class="deadline-badge">⚡ 1차 모집 마감 D-6 · 4월 7일(화) 24:00</div>
-    <div class="current-time" id="clock">2026년 4월 1일</div>
+    <div class="header-time" id="clock">2026.04.01</div>
   </div>
 </header>
 
-<div class="main">
-
-  <!-- KPI -->
-  <div class="col-full">
-    <div class="kpi-grid">
-      <div class="kpi kpi-purple">
-        <div class="kpi-label">총 프로그램</div>
-        <div class="kpi-value">10개</div>
-        <div class="kpi-sub">13개국 · 1차 모집</div>
-        <div class="kpi-trend trend-up">▲ 2차 모집 5월 예정 (+50개사)</div>
-      </div>
-      <div class="kpi kpi-pink">
-        <div class="kpi-label">모집 목표</div>
-        <div class="kpi-value">58개사</div>
-        <div class="kpi-sub">1차 기준 / 파트너사 8개</div>
-        <div class="kpi-trend trend-warn">⏳ 마감까지 D-6</div>
-      </div>
-      <div class="kpi kpi-green">
-        <div class="kpi-label">총 지원금 규모</div>
-        <div class="kpi-value">2.32억</div>
-        <div class="kpi-sub">58개사 × 평균 400만원</div>
-        <div class="kpi-trend trend-up">▲ 덴마크 최대 700만원</div>
-      </div>
-      <div class="kpi kpi-orange">
-        <div class="kpi-label">업무협약 완료</div>
-        <div class="kpi-value">8개사</div>
-        <div class="kpi-sub">서명본 수령 완료</div>
-        <div class="kpi-trend trend-up">✓ 전체 파트너사 100%</div>
-      </div>
+<!-- Content -->
+<div class="content">
+  <!-- Tab 1: 할 일 -->
+  <div class="tab-content active" id="tab-todo">
+    <div class="card">
+      <div class="card-title">📋 오늘의 할 일</div>
+      <div id="todoList"></div>
     </div>
   </div>
 
-  <!-- Todo -->
-  <div class="card col-2">
-    <div class="card-header">
-      <div class="card-title"><span>✅</span> 오늘 할 일 · 4월 1일(수)</div>
-    </div>
-    <div class="todo-input-row">
-      <input class="todo-input" id="todoInput" placeholder="새 할 일 입력..." onkeydown="handleKey(event)">
-      <select class="priority-select" id="prioritySelect">
-        <option value="urgent">🔴 긴급</option>
-        <option value="high">🟠 높음</option>
-        <option value="mid" selected>🟣 보통</option>
-        <option value="low">⚫ 낮음</option>
-      </select>
-      <button class="todo-add-btn" onclick="addTodo()">+ 추가</button>
-    </div>
-    <div class="todo-list" id="todoList"></div>
-  </div>
-
-  <!-- Revenue -->
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title"><span>💰</span> 예산 현황</div>
-    </div>
-    <div class="revenue-grid">
-      <div class="rev-item">
-        <div class="rev-label">1차 총 지원 예산</div>
-        <div class="rev-value" style="color:#B8B0FF;">2.32억</div>
-        <div class="rev-sub">58개사 기준 최대</div>
-      </div>
-      <div class="rev-item">
-        <div class="rev-label">집행 확정 (협약완료)</div>
-        <div class="rev-value" style="color:var(--green);">0원</div>
-        <div class="rev-sub">선정 후 정산 방식</div>
-      </div>
-    </div>
-    <table class="budget-table">
-      <thead><tr><th>국가</th><th>유형</th><th>지원금(최대)</th><th>규모</th></tr></thead>
-      <tbody>
-        <tr><td>🇩🇰 덴마크</td><td>액셀러레이팅</td><td style="color:var(--green);font-weight:700;">700만원</td><td>3개사</td></tr>
-        <tr><td>🇩🇪 독일/스위스</td><td>PoC</td><td style="color:#B8B0FF;font-weight:700;">550만원</td><td>5개사</td></tr>
-        <tr><td>🇦🇪 UAE</td><td>스케일업</td><td style="color:#B8B0FF;font-weight:700;">550만원</td><td>5개사</td></tr>
-        <tr><td>🇫🇷 프랑스</td><td>액셀러레이팅</td><td style="color:var(--orange);font-weight:700;">450만원</td><td>7개사</td></tr>
-        <tr><td>🇮🇳 인도 외</td><td>PoC/스케일업</td><td style="color:var(--text-muted);">400만원</td><td>15개사</td></tr>
-        <tr><td>🇯🇵 일본</td><td>액셀러레이팅</td><td style="color:var(--text-muted);">250만원</td><td>10개사</td></tr>
-        <tr><td>🇨🇳 중국</td><td>액셀러레이팅</td><td style="color:var(--red);">200만원</td><td>7개사</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Projects -->
-  <div class="card col-2">
-    <div class="card-header">
-      <div class="card-title"><span>📊</span> 프로젝트별 진행률</div>
-      <span style="font-size:11px;color:var(--text-muted);">사업기간 2026.4~12 기준</span>
-    </div>
-    <div class="prog-list" id="progList"></div>
-  </div>
-
-  <!-- Weekly Schedule -->
-  <div class="card col-full">
-    <div class="card-header">
-      <div class="card-title"><span>📅</span> 이번 주 일정 · 3월 30일(월) ~ 4월 5일(일)</div>
-    </div>
-    <div class="week-grid">
-      <div class="day-col weekend">
-        <div class="day-header"><div class="day-name">MON</div><div class="day-num">30</div></div>
-        <div class="day-events">
-          <div class="event ev-purple">사전타당성 검토표 제출</div>
-          <div class="event ev-orange">파트너사 킥오프 준비</div>
-        </div>
-      </div>
-      <div class="day-col weekend">
-        <div class="day-header"><div class="day-name">TUE</div><div class="day-num">31</div></div>
-        <div class="day-events">
-          <div class="event ev-green">1차 모집 공고 게시</div>
-          <div class="event ev-purple">업무협약서 최종 검토</div>
-        </div>
-      </div>
-      <div class="day-col today">
-        <div class="day-header"><div class="day-name">WED</div><div class="day-num">1</div></div>
-        <div class="day-events">
-          <div class="event ev-red">⭐ 오늘</div>
-          <div class="event ev-orange">접수현황 중간점검</div>
-          <div class="event ev-purple">기업 문의 대응</div>
-          <div class="event ev-green">SNS 홍보 콘텐츠</div>
-        </div>
-      </div>
-      <div class="day-col">
-        <div class="day-header"><div class="day-name">THU</div><div class="day-num">2</div></div>
-        <div class="day-events">
-          <div class="event ev-purple">파트너사 미팅 (123 Factory)</div>
-          <div class="event ev-cyan">심사위원 섭외 시작</div>
-        </div>
-      </div>
-      <div class="day-col">
-        <div class="day-header"><div class="day-name">FRI</div><div class="day-num">3</div></div>
-        <div class="day-events">
-          <div class="event ev-orange">주간 업무 점검 회의</div>
-          <div class="event ev-purple">2차 모집 기획 착수</div>
-        </div>
-      </div>
-      <div class="day-col weekend">
-        <div class="day-header"><div class="day-name">SAT</div><div class="day-num">4</div></div>
-        <div class="day-events">
-          <div class="event ev-red">주말 · 접수 오픈</div>
-        </div>
-      </div>
-      <div class="day-col weekend">
-        <div class="day-header"><div class="day-name">SUN</div><div class="day-num">5</div></div>
-        <div class="day-events">
-          <div class="event ev-red">주말 · 접수 오픈</div>
-        </div>
-      </div>
-    </div>
-    <!-- D-7 reminder -->
-    <div style="margin-top:14px;background:rgba(255,92,108,0.08);border:1px solid rgba(255,92,108,0.25);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;">
-      <span style="font-size:18px;">⚠️</span>
-      <div>
-        <span style="font-size:13px;font-weight:700;color:#FF9AA5;">마감 D-6 ·</span>
-        <span style="font-size:13px;color:var(--text-muted);"> 4월 7일(화) 24:00까지 스타트업플러스(startup-plus.kr) 온라인 접수 마감 · 이메일 접수 불가</span>
-      </div>
+  <!-- Tab 2: 일정 -->
+  <div class="tab-content" id="tab-schedule">
+    <div class="card">
+      <div class="card-title">📅 이번 주 일정</div>
+      <div id="scheduleList"></div>
     </div>
   </div>
 
-  <!-- Contacts -->
-  <div class="card col-full">
-    <div class="card-header">
-      <div class="card-title"><span>👥</span> 담당자 현황</div>
-    </div>
-    <div class="contact-grid">
-      <div class="contact-card">
-        <div class="contact-name">조은소라 책임</div>
-        <div class="contact-role">스케일업1팀 · 책임</div>
-        <div class="contact-countries">🇩🇪 독일·스위스 · 🇮🇳 인도</div>
-        <div class="contact-tel">02-2115-2019 · eunsora@sba.seoul.kr</div>
-      </div>
-      <div class="contact-card">
-        <div class="contact-name">안하경 선임</div>
-        <div class="contact-role">스케일업1팀 · 선임</div>
-        <div class="contact-countries">🇸🇬 싱가포르·인도네시아 · 🇦🇪 UAE · 🇻🇳 베트남</div>
-        <div class="contact-tel">02-2115-2021 · hagyeong@sba.seoul.kr</div>
-      </div>
-      <div class="contact-card">
-        <div class="contact-name">이수림 선임</div>
-        <div class="contact-role">스케일업1팀 · 선임</div>
-        <div class="contact-countries">🇯🇵 일본</div>
-        <div class="contact-tel">02-2115-2028 · surim@sba.seoul.kr</div>
-      </div>
-      <div class="contact-card">
-        <div class="contact-name">이혜연 선임</div>
-        <div class="contact-role">스케일업1팀 · 선임</div>
-        <div class="contact-countries">🇫🇷 프랑스 · 🇹🇭 태국·미얀마</div>
-        <div class="contact-tel">02-2115-2012 · hylee1014@sba.seoul.kr</div>
-      </div>
-      <div class="contact-card">
-        <div class="contact-name">한혜란 선임</div>
-        <div class="contact-role">스케일업1팀 · 선임</div>
-        <div class="contact-countries">🇨🇳 중국</div>
-        <div class="contact-tel">02-2115-2018 · hrhan@sba.seoul.kr</div>
-      </div>
-      <div class="contact-card">
-        <div class="contact-name">이채현 선임</div>
-        <div class="contact-role">스케일업1팀 · 선임</div>
-        <div class="contact-countries">🇩🇰 덴마크</div>
-        <div class="contact-tel">02-2115-2017 · chaehyun@sba.seoul.kr</div>
-      </div>
+  <!-- Tab 3: 프로젝트 -->
+  <div class="tab-content" id="tab-projects">
+    <div class="card">
+      <div class="card-title">📈 프로젝트 진행률</div>
+      <div id="projectList"></div>
     </div>
   </div>
 
+  <!-- Tab 4: 요약 -->
+  <div class="tab-content" id="tab-summary">
+    <div class="card">
+      <div class="card-title">💰 매출 요약</div>
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-value">2.32억</div>
+          <div class="stat-label">총 지원금</div>
+        </div>
+        <div class="stat-box pink">
+          <div class="stat-value">58개</div>
+          <div class="stat-label">모집 목표</div>
+        </div>
+        <div class="stat-box green">
+          <div class="stat-value">8개</div>
+          <div class="stat-label">협약 완료</div>
+        </div>
+        <div class="stat-box orange">
+          <div class="stat-value">10개</div>
+          <div class="stat-label">프로그램</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Tab Navigation -->
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('todo')">
+    <span>✅</span>
+    <span>할 일</span>
+  </button>
+  <button class="tab-btn" onclick="showTab('schedule')">
+    <span>📅</span>
+    <span>일정</span>
+  </button>
+  <button class="tab-btn" onclick="showTab('projects')">
+    <span>📈</span>
+    <span>프로젝트</span>
+  </button>
+  <button class="tab-btn" onclick="showTab('summary')">
+    <span>💰</span>
+    <span>요약</span>
+  </button>
 </div>
 
 <script>
 // ── 시계 ──
 function updateClock() {
-  const now = new Date(2026, 3, 1);
-  const days = ['일','월','화','수','목','금','토'];
-  const realNow = new Date();
-  const timeStr = realNow.toTimeString().slice(0,8);
-  document.getElementById('clock').textContent =
-    `2026년 4월 1일(수) ${timeStr}`;
+  const now = new Date();
+  const year = 2026;
+  const month = 4;
+  const day = 1;
+  const timeStr = now.toTimeString().slice(0,5);
+  document.getElementById('clock').textContent = `2026.4.1 ${timeStr}`;
 }
 setInterval(updateClock, 1000);
 updateClock();
 
+// ── 할 일 데이터 ──
+const todos = [
+  { text: '1차 모집 접수 현황 확인', priority: 'urgent', done: false },
+  { text: '사전타당성 검토표 미제출자 연락', priority: 'urgent', done: false },
+  { text: '기업평가 심사위원 확정', priority: 'high', done: false },
+  { text: '파트너사 협의 미팅', priority: 'high', done: false },
+  { text: 'SNS 홍보 콘텐츠 작성', priority: 'mid', done: false },
+];
+
+// ── 일정 데이터 ──
+const schedule = [
+  { day: '월(4/1)', task: '1차 모집 진행중' },
+  { day: '화(4/2)', task: '파트너사 미팅' },
+  { day: '수(4/3)', task: '접수 현황 점검' },
+  { day: '목(4/4)', task: '심사위원 협의' },
+  { day: '금(4/5)', task: '주간 회의' },
+];
+
 // ── 프로젝트 데이터 ──
 const projects = [
-  { name: '독일·스위스 PoC',   country: '🇩🇪🇨🇭 123 Factory',       type: 'poc',   slots: '최대 5개사', pct: 20, color: '#7C6EFF' },
-  { name: '인도 PoC',          country: '🇮🇳 Unicorn Incubator',    type: 'poc',   slots: '최대 6개사', pct: 20, color: '#00C9E0' },
-  { name: '싱가포르·인도네시아 PoC', country: '🇸🇬🇮🇩 킬사글로벌',  type: 'poc',   slots: '최대 5개사', pct: 15, color: '#00C9E0' },
-  { name: '베트남 PoC/스케일업', country: '🇻🇳 Vector Mars',         type: 'scale', slots: '최대 5개사', pct: 20, color: '#FFB547' },
-  { name: 'UAE 스케일업',       country: '🇦🇪 Alliance Compass',     type: 'scale', slots: '최대 5개사', pct: 25, color: '#FFB547' },
-  { name: '태국·미얀마 스케일업', country: '🇹🇭🇲🇲 서울언니들',     type: 'scale', slots: '최대 5개사', pct: 20, color: '#FFB547' },
-  { name: '중국 액셀러레이팅',  country: '🇨🇳 KIC 글로벌혁신센터',   type: 'accel', slots: '최대 7개사', pct: 10, color: '#B8B0FF' },
-  { name: '덴마크 액셀러레이팅', country: '🇩🇰 DTU Skylab·ICDK',    type: 'accel', slots: '최대 3개사', pct: 15, color: '#B8B0FF' },
-  { name: '프랑스 액셀러레이팅', country: '🇫🇷 HEC Paris',           type: 'accel', slots: '최대 7개사', pct: 28, color: '#B8B0FF' },
-  { name: '일본 액셀러레이팅',  country: '🇯🇵 BIG Impact',           type: 'accel', slots: '최대 10개사', pct: 22, color: '#B8B0FF' },
+  { name: '독일·스위스 PoC', pct: 20, color: '#7C6EFF' },
+  { name: '인도 PoC', pct: 20, color: '#00C9E0' },
+  { name: 'UAE 스케일업', pct: 25, color: '#FFB547' },
+  { name: '프랑스 액셀러레이팅', pct: 28, color: '#B8B0FF' },
 ];
 
-const typeLabel = { poc: 'PoC', scale: '스케일업', accel: '액셀러레이팅' };
-const typeCls   = { poc: 'type-poc', scale: 'type-scale', accel: 'type-accel' };
+// ── 렌더링 ──
+function renderTodos() {
+  const list = document.getElementById('todoList');
+  list.innerHTML = todos.map((t, i) => `
+    <div class="todo-item ${t.done ? 'done' : ''}" onclick="toggleTodo(${i})">
+      <div class="todo-priority ${t.priority}"></div>
+      <div class="todo-cb">
+        <span class="todo-check">✓</span>
+      </div>
+      <div class="todo-text">${t.text}</div>
+    </div>
+  `).join('');
+}
+
+function renderSchedule() {
+  const list = document.getElementById('scheduleList');
+  list.innerHTML = schedule.map(s => `
+    <div class="day-item">
+      <div class="day-header">
+        <div class="day-name">${s.day}</div>
+        <div class="day-task">${s.task}</div>
+      </div>
+    </div>
+  `).join('');
+}
 
 function renderProjects() {
-  const el = document.getElementById('progList');
-  el.innerHTML = projects.map(p => `
-    <div class="prog-item">
-      <div class="prog-top">
-        <div>
-          <div class="prog-name">${p.name}</div>
-          <div class="prog-country">${p.country}</div>
-        </div>
-        <div class="prog-pct" style="color:${p.color}">${p.pct}%</div>
+  const list = document.getElementById('projectList');
+  list.innerHTML = projects.map(p => `
+    <div class="project-item">
+      <div class="project-meta">
+        <div class="project-name">${p.name}</div>
+        <div style="color:${p.color};font-weight:700;">${p.pct}%</div>
       </div>
-      <div class="prog-meta">
-        <span class="prog-type ${typeCls[p.type]}">${typeLabel[p.type]}</span>
-        <span class="prog-slots">${p.slots}</span>
-      </div>
-      <div class="bar-wrap">
-        <div class="bar-fill" style="width:${p.pct}%;background:${p.color};"></div>
+      <div class="project-bar">
+        <div class="project-fill" style="width:${p.pct}%;background:${p.color};"></div>
       </div>
     </div>
   `).join('');
 }
+
+// ── 탭 전환 ──
+function showTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  event.target.closest('.tab-btn').classList.add('active');
+}
+
+// ── 할 일 토글 ──
+function toggleTodo(index) {
+  todos[index].done = !todos[index].done;
+  renderTodos();
+}
+
+// ── 초기 렌더링 ──
+renderTodos();
+renderSchedule();
 renderProjects();
 
-// ── Todo 데이터 ──
-let todos = [
-  { id:1, text:'1차 모집 접수 현황 스타트업플러스 확인', priority:'urgent', done:false },
-  { id:2, text:'사전타당성 검토표 미제출자 (강상원 외) 리마인드 연락', priority:'urgent', done:false },
-  { id:3, text:'참여확인서·보안각서 미수령 건 (강재원, 강민정, 최재성) 재발송', priority:'urgent', done:false },
-  { id:4, text:'기업평가 심사위원 pool 확정 (4월 중순 일정)', priority:'high', done:false },
-  { id:5, text:'파트너사별 모집 기업 문의 취합 및 회신', priority:'high', done:false },
-  { id:6, text:'SNS 채널 마감 D-6 홍보 게시물 업로드', priority:'high', done:false },
-  { id:7, text:'2차 모집 공고문 초안 작성 착수 (5월 모집 예정)', priority:'mid', done:false },
-  { id:8, text:'업무협약서 서명본 8개사 파일링 완료 처리', priority:'mid', done:false },
-  { id:9, text:'덴마크 프로그램 참가비 2,800유로 안내문 발송', priority:'mid', done:false },
-  { id:10, text:'회계정산 대비 증빙서류 체크리스트 사전 준비', priority:'low', done:false },
-];
-let nextId = 11;
-
-const pMap = {
-  urgent: { label:'긴급', cls:'p-urgent' },
-  high:   { label:'높음', cls:'p-high' },
-  mid:    { label:'보통', cls:'p-mid' },
-  low:    { label:'낮음', cls:'p-low' },
-};
-
-function renderTodos() {
-  const el = document.getElementById('todoList');
-  const sorted = [...todos].sort((a,b) => {
-    const order = {urgent:0, high:1, mid:2, low:3};
-    if(a.done !== b.done) return a.done ? 1 : -1;
-    return order[a.priority] - order[b.priority];
+// ── Service Worker ──
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js').catch(err => {
+    console.log('Service Worker 등록 실패:', err);
   });
-  el.innerHTML = sorted.map(t => `
-    <div class="todo-item ${t.done ? 'done' : ''}" id="todo-${t.id}">
-      <div class="todo-cb" onclick="toggleTodo(${t.id})">
-        <span class="todo-cb-check">✓</span>
-      </div>
-      <span class="p-tag ${pMap[t.priority].cls}">${pMap[t.priority].label}</span>
-      <span class="todo-text">${t.text}</span>
-      <button class="todo-del" onclick="deleteTodo(${t.id})">×</button>
-    </div>
-  `).join('');
-}
-
-function toggleTodo(id) {
-  const t = todos.find(x => x.id === id);
-  if(t) t.done = !t.done;
-  renderTodos();
-}
-function deleteTodo(id) {
-  todos = todos.filter(x => x.id !== id);
-  renderTodos();
-}
-function addTodo() {
-  const input = document.getElementById('todoInput');
-  const sel = document.getElementById('prioritySelect');
-  const text = input.value.trim();
-  if(!text) return;
-  todos.push({ id: nextId++, text, priority: sel.value, done: false });
-  input.value = '';
-  renderTodos();
-}
-function handleKey(e) {
-  if(e.key === 'Enter') addTodo();
-}
-
-renderTodos();
-
-// ── 요일별 일정 데이터 ──
-const schedule = [
-  { day: '월 30일', task: '사전타당성 검토표 제출' },
-  { day: '화 31일', task: '1차 모집 공고 게시' },
-  { day: '수 1일', task: '접수현황 중간점검 (오늘)' },
-  { day: '목 2일', task: '파트너사 미팅' },
-  { day: '금 3일', task: '주간 업무 점검 회의' },
-];
-
-function switchTab(tabName) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + tabName).classList.add('active');
-  event.target.closest('.tab-btn').classList.add('active');
-
-  if (tabName === 'todo') renderMobileTodos();
-  else if (tabName === 'schedule') renderMobileSchedule();
-  else if (tabName === 'projects') renderMobileProjects();
-  else if (tabName === 'summary') renderMobileSummary();
-}
-
-function renderMobileTodos() {
-  const list = document.getElementById('mobileTodoList');
-  const sorted = [...todos].sort((a,b) => {
-    const order = {urgent:0, high:1, mid:2, low:3};
-    if(a.done !== b.done) return a.done ? 1 : -1;
-    return order[a.priority] - order[b.priority];
-  });
-  list.innerHTML = sorted.slice(0, 5).map((t) => `
-    <div class="todo-item ${t.done ? 'done' : ''}" onclick="toggleTodo(${t.id})">
-      <div class="todo-cb"><span class="todo-cb-check">✓</span></div>
-      <div class="todo-text">${t.text}</div>
-      <span class="p-tag ${pMap[t.priority].cls}">${pMap[t.priority].label}</span>
-    </div>
-  `).join('');
-}
-
-function renderMobileSchedule() {
-  const list = document.getElementById('mobileScheduleList');
-  list.innerHTML = schedule.map(s => `
-    <div class="prog-item" style="padding: 10px 14px;">
-      <div class="prog-top"><span class="prog-name">${s.day}</span></div>
-      <div style="font-size: 12px; color: var(--text-muted);">${s.task}</div>
-    </div>
-  `).join('');
-}
-
-function renderMobileProjects() {
-  const list = document.getElementById('mobileProjectList');
-  list.innerHTML = projects.slice(0, 5).map(p => `
-    <div class="prog-item">
-      <div class="prog-top">
-        <span class="prog-name">${p.name}</span>
-        <span class="prog-pct" style="color: ${p.color};">${p.pct}%</span>
-      </div>
-      <div class="bar-wrap"><div class="bar-fill" style="width: ${p.pct}%; background: ${p.color};"></div></div>
-    </div>
-  `).join('');
-}
-
-function renderMobileSummary() {
-  const list = document.getElementById('mobileSummaryContent');
-  list.innerHTML = `
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-      <div class="rev-item">
-        <div class="rev-label">총 프로그램</div>
-        <div class="rev-value">10개</div>
-      </div>
-      <div class="rev-item">
-        <div class="rev-label">모집 목표</div>
-        <div class="rev-value">58개</div>
-      </div>
-      <div class="rev-item">
-        <div class="rev-label">총 지원금</div>
-        <div class="rev-value">2.32억</div>
-      </div>
-      <div class="rev-item">
-        <div class="rev-label">협약 완료</div>
-        <div class="rev-value">8개</div>
-      </div>
-    </div>
-  `;
-}
-
-// 초기 렌더링
-if (window.innerWidth <= 768) {
-  renderMobileTodos();
 }
 </script>
 
-<!-- 모바일 콘텐츠 -->
-<div class="mobile-content" id="mobileContent">
-  <div class="tab-panel active" id="tab-todo">
-    <div class="card">
-      <div class="card-title"><span>✅</span> 오늘 할 일</div>
-      <div id="mobileTodoList"></div>
-    </div>
-  </div>
-  <div class="tab-panel" id="tab-schedule">
-    <div class="card">
-      <div class="card-title"><span>📅</span> 이번 주 일정</div>
-      <div id="mobileScheduleList"></div>
-    </div>
-  </div>
-  <div class="tab-panel" id="tab-projects">
-    <div class="card">
-      <div class="card-title"><span>📈</span> 프로젝트</div>
-      <div id="mobileProjectList"></div>
-    </div>
-  </div>
-  <div class="tab-panel" id="tab-summary">
-    <div class="card">
-      <div class="card-title"><span>💰</span> 요약</div>
-      <div id="mobileSummaryContent"></div>
-    </div>
-  </div>
-</div>
-
-<nav class="mobile-nav">
-  <button class="tab-btn active" onclick="switchTab('todo')"><span>✅</span><span>할 일</span></button>
-  <button class="tab-btn" onclick="switchTab('schedule')"><span>📅</span><span>일정</span></button>
-  <button class="tab-btn" onclick="switchTab('projects')"><span>📈</span><span>프로젝트</span></button>
-  <button class="tab-btn" onclick="switchTab('summary')"><span>💰</span><span>요약</span></button>
-</nav>
 </body>
 </html>
