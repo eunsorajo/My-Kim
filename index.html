@@ -179,6 +179,82 @@
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── 모바일 최적화 ── */
+  @media (max-width: 768px) {
+    header { padding: 12px 16px; flex-direction: column; gap: 12px; }
+    .header-left { width: 100%; }
+    .header-right { width: 100%; justify-content: space-between; }
+    .deadline-badge { font-size: 11px; padding: 4px 10px; }
+    .current-time { font-size: 12px; }
+
+    .main { padding: 16px; grid-template-columns: 1fr; gap: 16px; }
+    .col-2 { grid-column: 1; }
+
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .kpi { padding: 14px 16px; }
+    .kpi-label { font-size: 10px; }
+    .kpi-value { font-size: 22px; }
+    .kpi-sub { font-size: 10px; }
+
+    .card { padding: 16px; border-radius: 12px; }
+    .card-title { font-size: 12px; }
+
+    .todo-input-row { flex-direction: column; gap: 6px; }
+    .priority-select { width: 100%; }
+    .todo-add-btn { width: 100%; padding: 12px; font-size: 14px; }
+    .todo-item { padding: 12px; gap: 8px; min-height: 44px; }
+    .todo-text { font-size: 13px; }
+
+    .prog-list { max-height: 300px; }
+    .prog-item { padding: 10px 12px; }
+    .prog-name { font-size: 12px; }
+
+    .week-grid { grid-template-columns: repeat(7, 1fr); gap: 6px; }
+    .day-col { padding: 8px 6px; min-height: 100px; }
+    .day-name { font-size: 9px; }
+    .day-num { font-size: 14px; }
+    .event { font-size: 9px; padding: 2px 5px; }
+
+    .contact-grid { grid-template-columns: 1fr; gap: 12px; }
+    .contact-card { padding: 12px; }
+    .contact-name { font-size: 12px; }
+    .contact-role { font-size: 11px; }
+    .contact-tel { font-size: 10px; margin-top: 3px; }
+
+    .rev-item { padding: 12px 14px; }
+    .rev-label { font-size: 10px; }
+    .rev-value { font-size: 18px; }
+
+    .budget-table { font-size: 11px; }
+    .budget-table th { padding: 6px 8px; font-size: 10px; }
+    .budget-table td { padding: 7px 8px; }
+  }
+
+  @media (max-width: 480px) {
+    header { padding: 10px 12px; }
+    .logo { width: 32px; height: 32px; font-size: 16px; }
+    .header-title { font-size: 15px; }
+    .header-sub { font-size: 11px; }
+
+    .main { padding: 12px; gap: 12px; }
+
+    .kpi-grid { grid-template-columns: 1fr; }
+    .kpi-label { font-size: 9px; }
+    .kpi-value { font-size: 20px; }
+
+    .todo-item { padding: 11px; min-height: 42px; }
+    .todo-cb { width: 16px; height: 16px; }
+    .p-tag { font-size: 9px; }
+
+    .day-col { min-height: 90px; }
+    .day-num { font-size: 13px; }
+
+    .contact-card { padding: 10px; }
+    .contact-name { font-size: 11px; }
+
+    body { font-size: 13px; }
+  }
 </style>
 </head>
 <body>
