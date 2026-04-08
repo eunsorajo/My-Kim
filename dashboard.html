@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a1a2e">
+<meta name="description" content="서울창업허브 글로벌 진출 프로그램 관리 대시보드">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="김비서">
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
+<link rel="manifest" href="/manifest.json">
 <title>김비서 대시보드</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -136,11 +143,21 @@
 </div>
 
 <script>
+// 할 일 체크박스
 document.querySelectorAll('.todo-cb').forEach(cb => {
   cb.addEventListener('change', function() {
     this.parentElement.style.opacity = this.checked ? '0.5' : '1';
   });
 });
+
+// Service Worker 등록 (PWA)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js').then(reg => {
+    console.log('✅ Service Worker 등록 완료');
+  }).catch(err => {
+    console.log('Service Worker 등록 실패:', err);
+  });
+}
 </script>
 
 </body>
